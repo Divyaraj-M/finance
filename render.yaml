@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: personal-finance-tracker
+    env: python
+    buildCommand: ""
+    startCommand: streamlit run home.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
