@@ -3,22 +3,22 @@ import json
 import gspread
 from google.oauth2 import service_account
 
-# Path to credential file
-GCREDS_PATH = os.path.join(os.path.dirname(__file__), "..", ".streamlit", "gcred.json")
+# --- Load credentials from environment variable ---
+gcred_str = os.getenv("GCRED_JSON")
+if not gcred_str:
+    raise EnvironmentError("❌ 'GCRED_JSON' environment variable not found.")
 
-# Load creds
-with open(GCREDS_PATH) as f:
-    creds_dict = json.load(f)
+# --- Convert to dict & clean private key ---
+creds_dict = json.loads(gcred_str)
 creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-credentials = service_account.Credentials.from_service_account_info(
-    creds_dict, scopes=SCOPES
-)
 
+# --- Create credentials ---
+credentials = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
 gc = gspread.authorize(credentials)
 
+# --- Exported method ---
 def get_worksheet(sheet_url, worksheet_name):
     sh = gc.open_by_url(sheet_url)
     return sh.worksheet(worksheet_name)
-
