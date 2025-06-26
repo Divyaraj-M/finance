@@ -1,9 +1,8 @@
 import streamlit as st
 
-# ✅ Set page config
+# ✅ Set up page
 st.set_page_config(page_title="💸 Home", layout="wide")
 
-# ✅ Import page modules
 from budgeting import show as show_budgeting
 from import_ import show as show_import
 from home_dashboard import show as show_dashboard
@@ -19,122 +18,60 @@ def navigate_to(target):
 
 # --- Render pages ---
 if st.session_state.page == "home":
-    st.markdown("<h1 style='text-align: center;'>🔐 Personal Finance Tracker v1</h1>", unsafe_allow_html=True)
-    st.markdown("<h5 style='text-align: center;'>👤 Welcome, <b>Divyaraj</b> & <b>Nithya</b></h5>", unsafe_allow_html=True)
-    st.markdown("---")
+    st.title("🔐 Personal Finance Tracker v1")
+    st.markdown("##### 👤 Welcome, Divyaraj & Nithya")
 
-    # Styled buttons using HTML + CSS injection
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.markdown("""
+    # Styled HTML buttons
+    st.markdown("""
         <style>
-        .dashboard-btn {
-            background-color: #2D6A4F;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            display: block;
+        .btn-grid {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 1.2rem 2rem;
             font-size: 1.1rem;
             font-weight: bold;
-            text-decoration: none;
-        }
-        .dashboard-btn:hover {
-            background-color: #40916C;
-            color: white;
-        }
-        </style>
-        <a class="dashboard-btn" href="javascript:window.location.reload();">🏠 Dashboard</a>
-        """, unsafe_allow_html=True)
-
-        if st.button("Open Dashboard", key="dash"):
-            navigate_to("dashboard")
-
-    with col2:
-        st.markdown("""
-        <style>
-        .budget-btn {
-            background-color: #6A4C93;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
+            border-radius: 0.6rem;
             text-align: center;
-            display: block;
-            font-size: 1.1rem;
-            font-weight: bold;
+            color: white;
             text-decoration: none;
+            flex: 1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .budget-btn:hover {
-            background-color: #8561C5;
-            color: white;
+        .btn:hover {
+            opacity: 0.9;
         }
+        .dashboard { background-color: #2E86C1; }
+        .budgeting { background-color: #27AE60; }
+        .import { background-color: #D35400; }
+        .data { background-color: #8E44AD; }
         </style>
-        <a class="budget-btn" href="javascript:window.location.reload();">📝 Budgeting</a>
-        """, unsafe_allow_html=True)
 
-        if st.button("Open Budgeting", key="budget"):
-            navigate_to("budgeting")
+        <div class="btn-grid">
+            <a href="?page=dashboard" class="btn dashboard">🏠 Dashboard</a>
+            <a href="?page=budgeting" class="btn budgeting">📝 Budgeting</a>
+            <a href="?page=import" class="btn import">📥 Import</a>
+            <a href="?page=data" class="btn data">📊 Data</a>
+        </div>
+    """, unsafe_allow_html=True)
 
-    with col3:
-        st.markdown("""
-        <style>
-        .import-btn {
-            background-color: #D00000;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            display: block;
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .import-btn:hover {
-            background-color: #FF595E;
-            color: white;
-        }
-        </style>
-        <a class="import-btn" href="javascript:window.location.reload();">📥 Import</a>
-        """, unsafe_allow_html=True)
+    # Handle navigation via query parameter
+    if st.query_params.get("page") == "dashboard":
+        navigate_to("dashboard")
+    elif st.query_params.get("page") == "budgeting":
+        navigate_to("budgeting")
+    elif st.query_params.get("page") == "import":
+        navigate_to("import")
+    elif st.query_params.get("page") == "data":
+        navigate_to("data")
 
-        if st.button("Open Import", key="import"):
-            navigate_to("import")
-
-    with col4:
-        st.markdown("""
-        <style>
-        .data-btn {
-            background-color: #1D3557;
-            color: white;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            display: block;
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .data-btn:hover {
-            background-color: #457B9D;
-            color: white;
-        }
-        </style>
-        <a class="data-btn" href="javascript:window.location.reload();">📊 Data</a>
-        """, unsafe_allow_html=True)
-
-        if st.button("Open Data", key="data"):
-            navigate_to("data")
-
-# --- Delegate other pages ---
 elif st.session_state.page == "dashboard":
     show_dashboard()
-
 elif st.session_state.page == "budgeting":
     show_budgeting()
-
 elif st.session_state.page == "import":
     show_import()
-
 elif st.session_state.page == "data":
     show_data()
