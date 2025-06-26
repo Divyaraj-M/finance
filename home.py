@@ -22,7 +22,7 @@ if st.session_state.page == "home":
     st.title("🔐 Personal Finance Tracker v1")
     st.markdown("##### 👤 Welcome, Divyaraj & Nithya")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(4)
     with col1:
         if st.button("🏠 Dashboard", use_container_width=True):
             navigate_to("dashboard")
