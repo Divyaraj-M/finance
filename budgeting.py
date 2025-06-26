@@ -12,7 +12,7 @@ PEOPLE = ["Divyaraj", "Nithya"]
 EXPENSE_CATEGORIES = [
     "Rent", "Food", "Transport - Internal", "Transport - External",
     "Home Expenses", "EMI", "Personal Care", "Savings",
-    "Shopping", "Leisure","Subscritions"
+    "Shopping", "Leisure","Subscriptions"
 ]
 INCOME_CATEGORIES = ["Freelancing", "Salary"]
 
