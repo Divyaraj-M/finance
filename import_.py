@@ -6,6 +6,7 @@ from utils.gsheet import get_worksheet
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1C2IwUJSB30tbfu1dbR-_PKRVeSePcGq7fpLxMqtTa1w"
 BANK_SHEET = "bank_transactions"
 CC_SHEET = "credit_card"
+PEOPLE = ["Divyaraj", "Nithya"]
 
 # === Validation Helper ===
 def validate_columns(df: pd.DataFrame, expected_cols: list) -> bool:
@@ -21,6 +22,9 @@ def show():
         st.session_state.page = "home"
         st.rerun()
 
+    # --- Person Selection ---
+    selected_person = st.selectbox("👤 Who's data are you importing?", PEOPLE)
+
     # === Bank Statement Upload ===
     st.header("🏦 Upload Bank Statement")
 
@@ -32,11 +36,18 @@ def show():
 
     if bank_file:
         df = pd.read_csv(bank_file)
+        df.columns = df.columns.str.strip()
+
         if not validate_columns(df, bank_cols):
             st.error("❌ Uploaded Bank CSV must match expected column schema.")
             st.markdown(f"**Expected columns:** `{', '.join(bank_cols)}`")
             st.markdown(f"**Uploaded columns:** `{', '.join(df.columns)}`")
         else:
+            df["person"] = selected_person
+            df["txn_timestamp"] = pd.to_datetime(df["txn_timestamp"], errors="coerce")
+            df["date"] = df["txn_timestamp"].dt.date.astype(str)
+            df["time"] = df["txn_timestamp"].dt.time.astype(str)
+
             worksheet = get_worksheet(SHEET_URL, BANK_SHEET)
             data_to_append = df.iloc[1:].values.tolist()
             for row in data_to_append:
@@ -54,11 +65,18 @@ def show():
 
     if cc_file:
         df = pd.read_csv(cc_file)
+        df.columns = df.columns.str.strip()
+
         if not validate_columns(df, cc_cols):
             st.error("❌ Uploaded Credit Card CSV must match expected column schema.")
             st.markdown(f"**Expected columns:** `{', '.join(cc_cols)}`")
             st.markdown(f"**Uploaded columns:** `{', '.join(df.columns)}`")
         else:
+            df["person"] = selected_person
+            df["txn_timestamp"] = pd.to_datetime(df["txn_timestamp"], errors="coerce")
+            df["date"] = df["txn_timestamp"].dt.date.astype(str)
+            df["time"] = df["txn_timestamp"].dt.time.astype(str)
+
             worksheet = get_worksheet(SHEET_URL, CC_SHEET)
             data_to_append = df.iloc[1:].values.tolist()
             for row in data_to_append:
