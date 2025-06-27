@@ -25,7 +25,6 @@ st.markdown("""
             padding: 1rem 2rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             border-radius: 0.5rem;
             margin-bottom: 1.5rem;
         }
@@ -33,10 +32,6 @@ st.markdown("""
             font-size: 1.6rem;
             font-weight: 700;
             color: #FFEDA8;
-        }
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
         }
         .stButton > button {
             background-color: #333 !important;
@@ -67,39 +62,25 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Top Bar with Navigation ---
+# --- Top Bar (Branding only) ---
 st.markdown("""
 <div class="top-bar">
     <div class="app-title">CoFi</div>
-    <div class="nav-buttons">
-        <form action="#" onsubmit="return false;">
-            <button onclick="window.location.reload();" class="nav-btn">🏠 Dashboard</button>
-        </form>
-        <form action="#" onsubmit="return false;">
-            <button onclick="window.location.reload();" class="nav-btn">📝 Budgeting</button>
-        </form>
-        <form action="#" onsubmit="return false;">
-            <button onclick="window.location.reload();" class="nav-btn">📥 Import</button>
-        </form>
-        <form action="#" onsubmit="return false;">
-            <button onclick="window.location.reload();" class="nav-btn">📊 Data</button>
-        </form>
-    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- Navigation with Streamlit Buttons ---
-nav_col1, nav_col2, nav_col3, nav_col4 = st.columns(4)
-with nav_col1:
+# --- Navigation Buttons ---
+col1, col2, col3, col4 = st.columns(4)
+with col1:
     if st.button("🏠 Dashboard", key="dash"):
         navigate_to("dashboard")
-with nav_col2:
+with col2:
     if st.button("📝 Budgeting", key="budget"):
         navigate_to("budgeting")
-with nav_col3:
+with col3:
     if st.button("📥 Import", key="import"):
         navigate_to("import")
-with nav_col4:
+with col4:
     if st.button("📊 Data", key="data"):
         navigate_to("data")
 
