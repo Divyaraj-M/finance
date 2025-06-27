@@ -1,6 +1,6 @@
 import streamlit as st
 
-# ✅ Set up page
+# ✅ Set page
 st.set_page_config(page_title="💸 Home", layout="wide")
 
 from budgeting import show as show_budgeting
@@ -8,7 +8,7 @@ from import_ import show as show_import
 from home_dashboard import show as show_dashboard
 from data import show as show_data
 
-# --- Session state for navigation ---
+# --- Session state routing ---
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
@@ -16,56 +16,51 @@ def navigate_to(target):
     st.session_state.page = target
     st.rerun()
 
-# --- Render pages ---
+# --- Styling ---
+st.markdown("""
+    <style>
+    .button-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .button-col button {
+        background-color: #1B2631;
+        color: #FFEDA8 !important;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 0.6rem;
+        width: 100%;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.2s ease-in-out;
+    }
+    .button-col button:hover {
+        background-color: #34495E;
+        transform: scale(1.03);
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Render Pages ---
 if st.session_state.page == "home":
     st.title("🔐 Personal Finance Tracker v1")
-    st.markdown("##### 👤 Welcome, Divyaraj & Nithya")
+    st.markdown("##### 👤 <span style='color:#FFEDA8'>Welcome, Divyaraj & Nithya</span>", unsafe_allow_html=True)
 
-    # Styled HTML buttons
-    st.markdown("""
-        <style>
-        .btn-grid {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        .btn {
-            padding: 1.2rem 2rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 0.6rem;
-            text-align: center;
-            color: white;
-            text-decoration: none;
-            flex: 1;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
-        .dashboard { background-color: #2E86C1; }
-        .budgeting { background-color: #27AE60; }
-        .import { background-color: #D35400; }
-        .data { background-color: #8E44AD; }
-        </style>
-
-        <div class="btn-grid">
-            <a href="?page=dashboard" class="btn dashboard">🏠 Dashboard</a>
-            <a href="?page=budgeting" class="btn budgeting">📝 Budgeting</a>
-            <a href="?page=import" class="btn import">📥 Import</a>
-            <a href="?page=data" class="btn data">📊 Data</a>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Handle navigation via query parameter
-    if st.query_params.get("page") == "dashboard":
-        navigate_to("dashboard")
-    elif st.query_params.get("page") == "budgeting":
-        navigate_to("budgeting")
-    elif st.query_params.get("page") == "import":
-        navigate_to("import")
-    elif st.query_params.get("page") == "data":
-        navigate_to("data")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button("🏠 Dashboard"):
+            navigate_to("dashboard")
+    with col2:
+        if st.button("📝 Budgeting"):
+            navigate_to("budgeting")
+    with col3:
+        if st.button("📥 Import"):
+            navigate_to("import")
+    with col4:
+        if st.button("📊 Data"):
+            navigate_to("data")
 
 elif st.session_state.page == "dashboard":
     show_dashboard()
