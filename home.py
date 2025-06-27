@@ -5,7 +5,7 @@ from home_dashboard import show as show_dashboard
 from data import show as show_data
 
 # --- App Configuration ---
-st.set_page_config(page_title="💸 CoFi | Personal Finance Tracker", layout="wide")
+st.set_page_config(page_title="CoFi | Personal Finance Tracker", layout="wide")
 
 # --- Session State Setup ---
 if "page" not in st.session_state:
@@ -73,7 +73,7 @@ with col4:
 
 # --- Page Rendering Logic ---
 if st.session_state.page == "home":
-    st.title("👋 Welcome to CoFi")
+    st.title("👋 Welcome Divyaraj & Nithya")
     st.markdown("Select a section above to get started.")
 elif st.session_state.page == "dashboard":
     show_dashboard()
