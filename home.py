@@ -1,14 +1,13 @@
 import streamlit as st
-
-# ✅ Set page
-st.set_page_config(page_title="💸 Home", layout="wide")
-
 from budgeting import show as show_budgeting
 from import_ import show as show_import
 from home_dashboard import show as show_dashboard
 from data import show as show_data
 
-# --- Session state routing ---
+# --- App Config ---
+st.set_page_config(page_title="💸 CoFi | Personal Finance Tracker", layout="wide")
+
+# --- Session State Setup ---
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
@@ -16,51 +15,73 @@ def navigate_to(target):
     st.session_state.page = target
     st.rerun()
 
-# --- Styling ---
+# --- NAVIGATION BAR STYLES ---
 st.markdown("""
     <style>
-    .button-row {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-    .button-col button {
-        background-color: #1B2631;
-        color: #FFEDA8 !important;
-        padding: 1.2rem;
-        font-size: 1.1rem;
-        border: none;
-        border-radius: 0.6rem;
-        width: 100%;
-        font-weight: bold;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        transition: all 0.2s ease-in-out;
-    }
-    .button-col button:hover {
-        background-color: #34495E;
-        transform: scale(1.03);
-    }
+        .nav-container {
+            background-color: #1C1C1C;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 0.5rem;
+        }
+
+        .app-title {
+            color: #FFEDA8;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .nav-links button {
+            background-color: transparent !important;
+            border: none !important;
+            color: #FFEDA8 !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            margin-left: 1rem !important;
+        }
+
+        .welcome {
+            font-size: 1.4rem;
+            color: #FFEDA8;
+            padding-top: 1rem;
+        }
+
+        hr {
+            border: 1px solid #444;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# --- Render Pages ---
-if st.session_state.page == "home":
-    st.title("🔐 Personal Finance Tracker v1")
-    st.markdown("##### 👤 <span style='color:#FFEDA8'>Welcome, Divyaraj & Nithya</span>", unsafe_allow_html=True)
+# --- NAVIGATION BAR HTML ---
+st.markdown(f"""
+    <div class="nav-container">
+        <div class="app-title">💸 CoFi</div>
+        <div class="nav-links">
+            <form action="" method="post">
+                <button type="submit" name="page" value="dashboard">🏠 Dashboard</button>
+                <button type="submit" name="page" value="budgeting">📝 Budgeting</button>
+                <button type="submit" name="page" value="import">📥 Import</button>
+                <button type="submit" name="page" value="data">📊 Data</button>
+            </form>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        if st.button("🏠 Dashboard"):
-            navigate_to("dashboard")
-    with col2:
-        if st.button("📝 Budgeting"):
-            navigate_to("budgeting")
-    with col3:
-        if st.button("📥 Import"):
-            navigate_to("import")
-    with col4:
-        if st.button("📊 Data"):
-            navigate_to("data")
+# Handle button clicks from the HTML form
+if st.session_state.get('page') is None and st.query_params.get("page"):
+    st.session_state.page = st.query_params["page"]
+elif st.session_state.get('page') is None:
+    st.session_state.page = "home"
+
+# --- MAIN BODY ---
+if st.session_state.page == "home":
+    st.markdown('<div class="welcome">👋 Welcome, Divyaraj & Nithya</div><hr>', unsafe_allow_html=True)
+    st.markdown("#### Start by choosing an option from the navigation bar above.")
 
 elif st.session_state.page == "dashboard":
     show_dashboard()
