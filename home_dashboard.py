@@ -231,9 +231,9 @@ def show():
     # --- Summary Cards ---
     if not merged.empty:
         st.markdown("#### 📊 Budget Summary")
-        
-        total_budgeted = merged["Budgeted"].sum()
-        total_spent = merged["Spent"].sum()
+        # Convert columns back to float for calculations
+        total_budgeted = merged["Budgeted"].replace(',', '', regex=True).astype(float).sum()
+        total_spent = merged["Spent"].replace(',', '', regex=True).astype(float).sum()
         overall_usage = (total_spent / total_budgeted * 100) if total_budgeted > 0 else 0
         
         col1, col2, col3 = st.columns(3)
