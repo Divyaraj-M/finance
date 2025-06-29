@@ -77,8 +77,13 @@ if st.session_state.page == "home":
     
     SHEET_URL = "https://docs.google.com/spreadsheets/d/1C2IwUJSB30tbfu1dbR-_PKRVeSePcGq7fpLxMqtTa1w"
     try:
-        bank_df = pd.DataFrame(get_worksheet(SHEET_URL, "bank_transactions").get_all_records())
-        credit_df = pd.DataFrame(get_worksheet(SHEET_URL, "credit_card").get_all_records())
+        @st.cache_data(ttl=60)
+        def get_sheet_data(sheet_url, worksheet_name):
+            ws = get_worksheet(sheet_url, worksheet_name)
+            return ws.get_all_records()
+
+        bank_df = pd.DataFrame(get_sheet_data(SHEET_URL, "bank_transactions"))
+        credit_df = pd.DataFrame(get_sheet_data(SHEET_URL, "credit_card"))
 
         if not bank_df.empty:
             bank_df["txn_timestamp"] = pd.to_datetime(bank_df["txn_timestamp"], errors="coerce")
@@ -131,8 +136,8 @@ if st.session_state.page == "home":
     st.markdown("### 🧾 Recent Transactions")
     
     try:
-        bank_df = pd.DataFrame(get_worksheet(SHEET_URL, "bank_transactions").get_all_records())
-        credit_df = pd.DataFrame(get_worksheet(SHEET_URL, "credit_card").get_all_records())
+        bank_df = pd.DataFrame(get_sheet_data(SHEET_URL, "bank_transactions"))
+        credit_df = pd.DataFrame(get_sheet_data(SHEET_URL, "credit_card"))
 
         bank_df["txn_timestamp"] = pd.to_datetime(bank_df["txn_timestamp"], errors="coerce")
         credit_df["txn_timestamp"] = pd.to_datetime(credit_df["txn_timestamp"], errors="coerce")
@@ -179,7 +184,7 @@ if st.session_state.page == "home":
     # --- 3-Year Savings Plan Tracker ---
     st.markdown("### 🎯 3-Year Savings Plan")
     try:
-        savings_df = pd.DataFrame(get_worksheet(SHEET_URL, "savings").get_all_records())
+        savings_df = pd.DataFrame(get_sheet_data(SHEET_URL, "savings"))
         savings_df["amount"] = pd.to_numeric(savings_df["amount"], errors="coerce")
 
         savings_goals = {

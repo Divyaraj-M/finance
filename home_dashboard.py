@@ -130,8 +130,8 @@ def show():
 
     # --- Merge Bank + CC ---
     actual_df = pd.concat([
-        bank_df[["txn_timestamp", "amount", "category"]] if not bank_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"]),
-        credit_df[["txn_timestamp", "amount", "category"]] if not credit_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"])
+        bank_df[["txn_timestamp", "amount", "my_category"]].rename(columns={"my_category": "category"}) if not bank_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"]),
+        credit_df[["txn_timestamp", "amount", "my_category"]].rename(columns={"my_category": "category"}) if not credit_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"])
     ], ignore_index=True)
 
     actual_df["txn_timestamp"] = pd.to_datetime(actual_df["txn_timestamp"])
