@@ -41,7 +41,7 @@ st.markdown("""
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
 """, unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 with col1:
     if st.button("🏠 Dashboard", key="dash", help="View your financial overview and analytics"):
         navigate_to("dashboard")
@@ -54,6 +54,9 @@ with col3:
 with col4:
     if st.button("📊 Data", key="data", help="Categorize and manage transaction data"):
         navigate_to("data")
+with col5:
+    if st.button("💰 Savings", key="savings", help="Categorize and track your savings goals"):
+        navigate_to("savings")
 
 st.markdown("</div></div>", unsafe_allow_html=True)
 
@@ -181,3 +184,6 @@ elif st.session_state.page == "import":
     show_import()
 elif st.session_state.page == "data":
     show_data()
+elif st.session_state.page == "savings":
+    from pages.savings import show as show_savings
+    show_savings()

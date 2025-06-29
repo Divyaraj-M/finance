@@ -1,25 +1,30 @@
-/* Modern Personal Finance App Styling */
+/* Dark Mode Personal Finance App Styling */
 
 /* Global Styles */
 .main {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
     min-height: 100vh;
 }
 
-/* Custom CSS for Streamlit */
 .stApp {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    color: #f5f6fa !important;
+}
+
+body, html {
+    color: #f5f6fa !important;
+    background: #232526 !important;
 }
 
 /* Top Navigation Bar */
 .top-bar {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(135deg, #18181b 0%, #232526 100%);
     padding: 1.5rem 2rem;
     border-radius: 1rem;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .app-title {
@@ -29,194 +34,144 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Navigation Buttons */
-.nav-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: white !important;
-    border: none !important;
+.nav-button, .stButton > button {
+    background: linear-gradient(135deg, #232526 0%, #414345 100%) !important;
+    color: #f5f6fa !important;
+    border: 1px solid #393e46 !important;
     padding: 0.8rem 1.5rem !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
     border-radius: 0.8rem !important;
     transition: all 0.3s ease !important;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
 }
 
-.nav-button:hover {
+.nav-button:hover, .stButton > button:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
+    background: linear-gradient(135deg, #393e46 0%, #232526 100%) !important;
 }
 
 /* Card Styling */
 .custom-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(36, 37, 38, 0.98);
     border-radius: 1rem;
     padding: 1.5rem;
     margin: 1rem 0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid #393e46;
+    color: #f5f6fa;
     transition: all 0.3s ease;
 }
 
 .custom-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
 }
 
 /* Metric Cards */
 .metric-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #393e46 0%, #232526 100%);
+    color: #ffd89b;
     border-radius: 1rem;
     padding: 1.5rem;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     transition: all 0.3s ease;
 }
 
 .metric-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
 }
 
 .metric-value {
     font-size: 2rem;
     font-weight: 800;
     margin: 0.5rem 0;
+    color: #ffd89b;
 }
 
 .metric-label {
     font-size: 0.9rem;
     opacity: 0.9;
     font-weight: 500;
+    color: #f5f6fa;
 }
 
 /* Transaction Rows */
 .txn-row {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(36, 37, 38, 0.95);
     padding: 1rem;
     border-radius: 0.8rem;
     margin: 0.5rem 0;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #ffd89b;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    color: #f5f6fa;
 }
 
 .txn-row:hover {
     transform: translateX(4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
 
 .txn-tag {
     display: inline-block;
     padding: 0.3rem 0.8rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #ffd89b 0%, #393e46 100%);
+    color: #232526;
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 1rem;
     margin-left: 0.5rem;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 216, 155, 0.2);
 }
 
 /* Form Elements */
-.stSelectbox > div > div {
-    background: rgba(255, 255, 255, 0.9) !important;
+.stSelectbox > div > div, .stNumberInput > div > div > input, .stDateInput > div > div > input {
+    background: #232526 !important;
+    color: #f5f6fa !important;
     border-radius: 0.8rem !important;
-    border: 2px solid rgba(102, 126, 234, 0.2) !important;
-}
-
-.stNumberInput > div > div > input {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-radius: 0.8rem !important;
-    border: 2px solid rgba(102, 126, 234, 0.2) !important;
+    border: 2px solid #393e46 !important;
     padding: 0.8rem !important;
-}
-
-.stDateInput > div > div > input {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-radius: 0.8rem !important;
-    border: 2px solid rgba(102, 126, 234, 0.2) !important;
-    padding: 0.8rem !important;
-}
-
-/* Buttons */
-.stButton > button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: white !important;
-    border: none !important;
-    padding: 0.8rem 1.5rem !important;
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    border-radius: 0.8rem !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
-}
-
-/* Success/Error Messages */
-.stSuccess {
-    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%) !important;
-    color: white !important;
-    border-radius: 0.8rem !important;
-    padding: 1rem !important;
-    border: none !important;
-}
-
-.stError {
-    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%) !important;
-    color: white !important;
-    border-radius: 0.8rem !important;
-    padding: 1rem !important;
-    border: none !important;
-}
-
-.stWarning {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
-    color: white !important;
-    border-radius: 0.8rem !important;
-    padding: 1rem !important;
-    border: none !important;
 }
 
 /* Data Tables */
 .stDataFrame {
-    background: rgba(255, 255, 255, 0.95) !important;
+    background: #232526 !important;
+    color: #f5f6fa !important;
     border-radius: 1rem !important;
     overflow: hidden !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
 }
 
 /* Expanders */
 .stExpander {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: #232526 !important;
+    color: #f5f6fa !important;
     border-radius: 0.8rem !important;
-    border: 2px solid rgba(102, 126, 234, 0.2) !important;
+    border: 2px solid #393e46 !important;
     margin: 0.5rem 0 !important;
 }
 
 /* File Uploader */
 .stFileUploader {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: #232526 !important;
+    color: #f5f6fa !important;
     border-radius: 0.8rem !important;
-    border: 2px dashed rgba(102, 126, 234, 0.3) !important;
+    border: 2px dashed #393e46 !important;
     padding: 2rem !important;
     text-align: center !important;
 }
 
 /* Progress Bars */
 .stProgress > div > div > div {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #ffd89b 0%, #393e46 100%) !important;
     border-radius: 1rem !important;
 }
 
@@ -224,7 +179,33 @@
 .js-plotly-plot {
     border-radius: 1rem !important;
     overflow: hidden !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    background: #232526 !important;
+}
+
+/* Success/Error/Warning Messages */
+.stSuccess {
+    background: linear-gradient(135deg, #22c55e 0%, #166534 100%) !important;
+    color: #f5f6fa !important;
+    border-radius: 0.8rem !important;
+    padding: 1rem !important;
+    border: none !important;
+}
+
+.stError {
+    background: linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%) !important;
+    color: #f5f6fa !important;
+    border-radius: 0.8rem !important;
+    padding: 1rem !important;
+    border: none !important;
+}
+
+.stWarning {
+    background: linear-gradient(135deg, #f59e0b 0%, #78350f 100%) !important;
+    color: #f5f6fa !important;
+    border-radius: 0.8rem !important;
+    padding: 1rem !important;
+    border: none !important;
 }
 
 /* Responsive Design */
@@ -233,15 +214,12 @@
         padding: 1rem;
         margin-bottom: 1rem;
     }
-    
     .app-title {
         font-size: 1.5rem;
     }
-    
     .metric-value {
         font-size: 1.5rem;
     }
-    
     .custom-card {
         padding: 1rem;
         margin: 0.5rem 0;
@@ -265,15 +243,15 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: #18181b;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffd89b 0%, #393e46 100%);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    background: linear-gradient(135deg, #ffd89b 0%, #232526 100%);
 } 
