@@ -73,6 +73,10 @@ def show():
                     st.dataframe(final_data, use_container_width=True)
         except Exception as e:
             st.error(f"❌ Error uploading bank statement: {e}")
+        # Center the upload button (if you want a manual upload button, place it here)
+        # col1, col2, col3 = st.columns([1,1,1])
+        # with col2:
+        #     st.button("Upload Bank Data")
 
     st.markdown("---")
 
@@ -104,6 +108,10 @@ def show():
                     st.dataframe(final_data, use_container_width=True)
         except Exception as e:
             st.error(f"❌ Error uploading credit card statement: {e}")
+        # Center the upload button (if you want a manual upload button, place it here)
+        # col1, col2, col3 = st.columns([1,1,1])
+        # with col2:
+        #     st.button("Upload Credit Card Data")
 
     # Tips Section
     st.markdown("### 💡 Import Tips")
