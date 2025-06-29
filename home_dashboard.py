@@ -2,13 +2,28 @@ import streamlit as st
 import pandas as pd
 from utils.gsheet import get_worksheet
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# Load Custom CSS
+with open('assets/style.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def show():
-    st.title("🏠 Dashboard")
-
-    if st.button("🔙 Back to Home"):
-        st.session_state.page = "home"
-        st.rerun()
+    # Header with back button
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        if st.button("🔙 Back to Home", help="Return to main dashboard"):
+            st.session_state.page = "home"
+            st.rerun()
+    
+    with col2:
+        st.markdown("""
+        <div class="custom-card">
+            <h1 style="margin-bottom: 0.5rem;">📊 Financial Dashboard</h1>
+            <p style="color: #666; margin-bottom: 0;">Comprehensive overview of your financial health</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     SHEET_URL = "https://docs.google.com/spreadsheets/d/1C2IwUJSB30tbfu1dbR-_PKRVeSePcGq7fpLxMqtTa1w"
 
@@ -62,22 +77,54 @@ def show():
 
     cc_expense_total = credit_df[credit_df["type"] == "DEBIT"]["amount"].sum() if not credit_df.empty else 0
 
+    # Enhanced KPI Cards
+    st.markdown("### 📈 Key Financial Metrics")
+    
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("💰 Net Worth", f"₹{net_worth:,.2f}")
-    col2.metric("📉 Avg Monthly Expenses", f"₹{avg_monthly_expense:,.0f}")
-    col3.metric("🏦 Current Bank Balance", f"₹{latest_balance:,.2f}")
-    col4.metric("💳 Credit Card Expenses", f"₹{cc_expense_total:,.0f}")
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">💰 Net Worth</div>
+            <div class="metric-value">₹{net_worth:,.0f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">📉 Avg Monthly Expenses</div>
+            <div class="metric-value">₹{avg_monthly_expense:,.0f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">🏦 Current Bank Balance</div>
+            <div class="metric-value">₹{latest_balance:,.0f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">💳 Credit Card Expenses</div>
+            <div class="metric-value">₹{cc_expense_total:,.0f}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # --- Filters ---
-    st.markdown("## 📊 Budget vs Actual Analysis")
-
+    # --- Filters Section ---
+    st.markdown("### 📊 Budget vs Actual Analysis")
+    
     filter_col1, filter_col2 = st.columns(2)
-    selected_person = filter_col1.selectbox("Select Person", ["All", "Divyaraj", "Nithya"])
+    selected_person = filter_col1.selectbox("👤 Select Person", ["All", "Divyaraj", "Nithya"])
+    
     if budget_df.empty or "month_year" not in budget_df.columns:
         st.warning("⏳ No budget data available.")
         return
+    
     selected_month = filter_col2.selectbox(
-        "Select Month",
+        "📅 Select Month",
         sorted(budget_df["month_year"].astype(str).unique())[::-1]
     )
 
@@ -104,18 +151,120 @@ def show():
     merged.columns = ["Category", "Budgeted", "Spent"]
     merged["% Used"] = (merged["Spent"] / merged["Budgeted"] * 100).round(1)
     merged["% Used"] = merged["% Used"].replace([float("inf"), -float("inf")], 0)
+    
+    # Add color coding for budget usage
+    def color_budget_usage(val):
+        if val > 100:
+            return 'background-color: #ffebee; color: #c62828;'
+        elif val > 80:
+            return 'background-color: #fff3e0; color: #ef6c00;'
+        else:
+            return 'background-color: #e8f5e8; color: #2e7d32;'
+    
+    merged_styled = merged.style.applymap(color_budget_usage, subset=['% Used'])
 
-    st.dataframe(merged, use_container_width=True)
+    st.markdown("#### 📋 Budget vs Actual Comparison")
+    st.dataframe(merged_styled, use_container_width=True)
 
-    # --- Pie Chart ---
-    if not spent_per_cat.empty:
-        pie = px.pie(spent_per_cat, names="category", values="amount", title="🧁 Category-wise Spending Breakdown")
-        st.plotly_chart(pie, use_container_width=True)
+    # --- Charts Section ---
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if not spent_per_cat.empty:
+            # Enhanced Pie Chart
+            fig_pie = px.pie(
+                spent_per_cat, 
+                names="category", 
+                values="amount", 
+                title="🧁 Category-wise Spending Breakdown",
+                color_discrete_sequence=px.colors.qualitative.Set3
+            )
+            fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+            fig_pie.update_layout(
+                title_x=0.5,
+                title_font_size=16,
+                showlegend=True,
+                height=400
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
 
-    # --- Monthly Trend ---
+    with col2:
+        if not actual_df.empty:
+            # Enhanced Bar Chart for Top Categories
+            top_categories = spent_per_cat.nlargest(8, 'amount')
+            fig_bar = px.bar(
+                top_categories,
+                x='amount',
+                y='category',
+                orientation='h',
+                title="📊 Top Spending Categories",
+                color='amount',
+                color_continuous_scale='viridis'
+            )
+            fig_bar.update_layout(
+                title_x=0.5,
+                title_font_size=16,
+                height=400,
+                xaxis_title="Amount (₹)",
+                yaxis_title="Category"
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+    # --- Monthly Trend Chart ---
     if not actual_df.empty:
+        st.markdown("#### 📈 Monthly Spending Trend")
         trend_data = actual_df.copy()
         trend_data["month"] = trend_data["txn_timestamp"].dt.to_period("M").astype(str)
         trend_chart = trend_data.groupby("month")["amount"].sum().reset_index()
-        line = px.line(trend_chart, x="month", y="amount", title="📈 Monthly Spending Trend")
-        st.plotly_chart(line, use_container_width=True)
+        
+        fig_line = px.line(
+            trend_chart, 
+            x="month", 
+            y="amount", 
+            title="📈 Monthly Spending Trend",
+            markers=True
+        )
+        fig_line.update_layout(
+            title_x=0.5,
+            title_font_size=16,
+            height=400,
+            xaxis_title="Month",
+            yaxis_title="Total Amount (₹)"
+        )
+        fig_line.update_traces(line_color='#667eea', marker_color='#667eea')
+        st.plotly_chart(fig_line, use_container_width=True)
+
+    # --- Summary Cards ---
+    if not merged.empty:
+        st.markdown("#### 📊 Budget Summary")
+        
+        total_budgeted = merged["Budgeted"].sum()
+        total_spent = merged["Spent"].sum()
+        overall_usage = (total_spent / total_budgeted * 100) if total_budgeted > 0 else 0
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">📋 Total Budgeted</div>
+                <div class="metric-value">₹{total_budgeted:,.0f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">💸 Total Spent</div>
+                <div class="metric-value">₹{total_spent:,.0f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            usage_color = "#e74c3c" if overall_usage > 100 else "#27ae60" if overall_usage <= 80 else "#f39c12"
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-label">📊 Budget Usage</div>
+                <div class="metric-value" style="color: {usage_color};">{overall_usage:.1f}%</div>
+            </div>
+            """, unsafe_allow_html=True)
