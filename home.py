@@ -176,6 +176,46 @@ if st.session_state.page == "home":
     except Exception as e:
         st.error(f"Could not load recent transactions: {e}")
 
+    # --- 3-Year Savings Plan Tracker ---
+    st.markdown("### 🎯 3-Year Savings Plan")
+    try:
+        savings_df = pd.DataFrame(get_worksheet(SHEET_URL, "savings").get_all_records())
+        savings_df["amount"] = pd.to_numeric(savings_df["amount"], errors="coerce")
+
+        savings_goals = {
+            "Wedding Plan": 1000000,
+            "Gold Plan": 700000,
+            "IITM Course": 350000,
+            "CFA": 500000,
+            "General Savings": 400000,
+            "Emergency Fund": 200000
+        }
+
+        summary_df = savings_df.groupby("allocated_to")[["amount"]].sum().reset_index()
+
+        left_col, right_col = st.columns(2)
+        for i, (goal, target) in enumerate(savings_goals.items()):
+            saved_row = summary_df[summary_df["allocated_to"].str.lower() == goal.lower()]
+            saved_amount = saved_row["amount"].values[0] if not saved_row.empty else 0
+            progress = saved_amount / target if target else 0
+
+            container = left_col if i % 2 == 0 else right_col
+            with container:
+                st.markdown(f"**{goal}**")
+                st.markdown(
+                    f"""
+                    <div style='display: flex; justify-content: space-between; font-size: 0.9rem;'>
+                        <span>Saved: ₹{saved_amount:,.0f}</span>
+                        <span>Target: ₹{target:,.0f}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.progress(min(progress, 1.0))
+                st.markdown(f"📅 Monthly Goal: ₹{target // 36:,.0f}")
+    except Exception as e:
+        st.error(f"❌ Could not load savings tracker: {e}")
+
 elif st.session_state.page == "dashboard":
     show_dashboard()
 elif st.session_state.page == "budgeting":

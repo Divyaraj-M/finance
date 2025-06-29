@@ -22,3 +22,16 @@ gc = gspread.authorize(credentials)
 def get_worksheet(sheet_url, worksheet_name):
     sh = gc.open_by_url(sheet_url)
     return sh.worksheet(worksheet_name)
+
+def update_worksheet_rows(sheet_url, worksheet_name, rows):
+    """
+    Appends a list of dicts (rows) to the worksheet. Each dict should have keys matching the worksheet's columns.
+    """
+    ws = get_worksheet(sheet_url, worksheet_name)
+    # Get header from the first row
+    header = ws.row_values(1)
+    to_append = []
+    for row in rows:
+        # Ensure the order matches the header
+        to_append.append([row.get(col, "") for col in header])
+    ws.append_rows(to_append, value_input_option="USER_ENTERED")
