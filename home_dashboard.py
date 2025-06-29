@@ -144,27 +144,21 @@ def show():
         filtered_budget = filtered_budget[filtered_budget["person"] == selected_person]
     filtered_budget = filtered_budget[filtered_budget["month_year"].astype(str) == selected_month]
 
-    spent_per_cat = actual_df.groupby("category")["amount"].sum().reset_index()
-    budget_per_cat = filtered_budget.groupby("category")["budgeted"].sum().reset_index()
+    spent_per_cat = actual_df.groupby("category")[["amount"]].sum().reset_index()
+    budget_per_cat = filtered_budget.groupby("category")[["budgeted"]].sum().reset_index()
 
     merged = pd.merge(budget_per_cat, spent_per_cat, on="category", how="outer").fillna(0)
     merged.columns = ["Category", "Budgeted", "Spent"]
-    merged["% Used"] = (merged["Spent"] / merged["Budgeted"] * 100).round(1)
+    merged["% Used"] = (merged["Spent"] / merged["Budgeted"] * 100).round(2)
     merged["% Used"] = merged["% Used"].replace([float("inf"), -float("inf")], 0)
-    
-    # Add color coding for budget usage
-    def color_budget_usage(val):
-        if val > 100:
-            return 'background-color: #ffebee; color: #c62828;'
-        elif val > 80:
-            return 'background-color: #fff3e0; color: #ef6c00;'
-        else:
-            return 'background-color: #e8f5e8; color: #2e7d32;'
-    
-    merged_styled = merged.style.applymap(color_budget_usage, subset=['% Used'])
+
+    # Format columns to two decimal places
+    merged["Budgeted"] = merged["Budgeted"].map(lambda x: f"{x:,.2f}")
+    merged["Spent"] = merged["Spent"].map(lambda x: f"{x:,.2f}")
+    merged["% Used"] = merged["% Used"].map(lambda x: f"{x:.2f}")
 
     st.markdown("#### 📋 Budget vs Actual Comparison")
-    st.dataframe(merged_styled, use_container_width=True)
+    st.dataframe(merged, use_container_width=True)
 
     # --- Charts Section ---
     col1, col2 = st.columns(2)
