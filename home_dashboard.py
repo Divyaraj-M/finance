@@ -139,14 +139,21 @@ def show():
     if selected_person != "All":
         filtered_bank = filtered_bank[filtered_bank["person"] == selected_person]
     filtered_bank = filtered_bank[(filtered_bank["txn_timestamp"].dt.to_period("M").astype(str) == selected_month) & (filtered_bank["type"].str.upper() == "DEBIT")]
+    # Standardize and filter my_category
+    filtered_bank = filtered_bank[filtered_bank["my_category"].notna() & (filtered_bank["my_category"].str.strip() != "")].copy()
+    filtered_bank["my_category"] = filtered_bank["my_category"].str.strip().str.lower()
 
     # Group by my_category and sum amount
     actuals_per_cat = filtered_bank.groupby("my_category")["amount"].sum().reset_index()
     actuals_per_cat.columns = ["Category", "Spent"]
+    actuals_per_cat["Category"] = actuals_per_cat["Category"].str.strip().str.lower()
 
-    # Group budget by category
-    budget_per_cat = filtered_budget.groupby("category")["budgeted"].sum().reset_index()
+    # Group budget by category (standardize)
+    budget_per_cat = filtered_budget.copy()
+    budget_per_cat["category"] = budget_per_cat["category"].str.strip().str.lower()
+    budget_per_cat = budget_per_cat.groupby("category")["budgeted"].sum().reset_index()
     budget_per_cat.columns = ["Category", "Budgeted"]
+    budget_per_cat["Category"] = budget_per_cat["Category"].str.strip().str.lower()
 
     # Merge on Category
     merged = pd.merge(budget_per_cat, actuals_per_cat, on="Category", how="outer").fillna(0)
@@ -160,6 +167,8 @@ def show():
 
     st.markdown("#### 📋 Budget vs Actual Comparison")
     st.dataframe(merged, use_container_width=True)
+    st.markdown("#### (Debug) Actuals Per Category")
+    st.dataframe(actuals_per_cat, use_container_width=True)
 
     # --- Charts Section ---
     col1, col2 = st.columns(2)
