@@ -230,8 +230,25 @@ if st.session_state.page == "home":
         amount = st.number_input("Amount", step=1.0, format="%.2f")
         txn_type = st.selectbox("Type", ["DEBIT", "CREDIT"])
         description = st.text_input("Description")
-        my_category = st.text_input("My Category (Tag)")
         person = st.selectbox("Person", ["Divyaraj", "Nithya"])
+        my_category_options = [
+            "Rent",
+            "Food",
+            "Transport - Internal",
+            "Transport - External",
+            "Home Expenses",
+            "EMI",
+            "Personal Care",
+            "Savings",
+            "Shopping",
+            "Leisure",
+            "Other"
+        ]
+        my_category_selected = st.selectbox("My Category (Tag)", my_category_options)
+        if my_category_selected == "Other":
+            my_category = st.text_input("Custom Category")
+        else:
+            my_category = my_category_selected
         if entry_type == "Bank":
             account_number = st.text_input("Account Number")
             current_balance = st.number_input("Current Balance", step=1.0, format="%.2f")
@@ -255,7 +272,6 @@ if st.session_state.page == "home":
                 ws.append_row(row, value_input_option="USER_ENTERED")
                 st.success("✅ Transaction added successfully!")
         else:
-            # Credit Card-specific fields (now matching your provided columns)
             card_number = st.text_input("Card Number")
             card_name = st.selectbox("Card Name", ["Paytm", "HDFC"])
             merchant = st.text_input("Merchant")
