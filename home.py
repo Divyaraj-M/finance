@@ -221,6 +221,61 @@ if st.session_state.page == "home":
     except Exception as e:
         st.error(f"❌ Could not load savings tracker: {e}")
 
+    # --- Manual Data Entry Button and Form ---
+    st.markdown("---")
+    with st.expander("➕ Add Transaction (Manual Entry)"):
+        entry_type = st.radio("Transaction Type", ["Bank", "Credit Card"], horizontal=True)
+        txn_date = st.date_input("Date")
+        txn_time = st.time_input("Time")
+        amount = st.number_input("Amount", step=1.0, format="%.2f")
+        txn_type = st.selectbox("Type", ["DEBIT", "CREDIT"])
+        description = st.text_input("Description")
+        my_category = st.text_input("My Category (Tag)")
+        person = st.selectbox("Person", ["Divyaraj", "Nithya"])
+        if entry_type == "Bank":
+            account_number = st.text_input("Account Number")
+            current_balance = st.number_input("Current Balance", step=1.0, format="%.2f")
+            reference = st.text_input("Reference")
+            merchant = st.text_input("Merchant")
+            category_icon_name = st.text_input("Category Icon Name")
+            category = st.text_input("Bank Category (optional)")
+            bank_name = st.text_input("Bank Name")
+            notes = st.text_area("Notes")
+            if st.button("Submit Transaction"):
+                import datetime
+                dt = datetime.datetime.combine(txn_date, txn_time)
+                dt_str = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                date_str = dt.strftime("%d-%b-%Y")
+                time_str = dt.strftime("%H:%M:%S")
+                row = [
+                    account_number, dt_str, amount, current_balance, txn_type, reference, merchant,
+                    category_icon_name, category, bank_name, notes, person, date_str, time_str, my_category
+                ]
+                ws = get_worksheet(SHEET_URL, "bank_transactions")
+                ws.append_row(row, value_input_option="USER_ENTERED")
+                st.success("✅ Transaction added successfully!")
+        else:
+            # Credit Card-specific fields (now matching your provided columns)
+            card_number = st.text_input("Card Number")
+            card_name = st.selectbox("Card Name", ["Paytm", "HDFC"])
+            merchant = st.text_input("Merchant")
+            category_icon_name = st.text_input("Category Icon Name")
+            category = st.text_input("CC Category")
+            notes = st.text_area("Notes")
+            if st.button("Submit Transaction"):
+                import datetime
+                dt = datetime.datetime.combine(txn_date, txn_time)
+                dt_str = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                date_str = dt.strftime("%Y-%m-%d")
+                time_str = dt.strftime("%H:%M:%S")
+                row = [
+                    card_number, card_name, dt_str, amount, txn_type, merchant,
+                    category_icon_name, category, notes, person, date_str, time_str, my_category
+                ]
+                ws = get_worksheet(SHEET_URL, "credit_card")
+                ws.append_row(row, value_input_option="USER_ENTERED")
+                st.success("✅ Transaction added successfully!")
+
 elif st.session_state.page == "dashboard":
     show_dashboard()
 elif st.session_state.page == "budgeting":
