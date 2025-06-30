@@ -128,27 +128,28 @@ def show():
         sorted(budget_df["month_year"].astype(str).unique())[::-1]
     )
 
-    # --- Merge Bank + CC ---
-    actual_df = pd.concat([
-        bank_df[["txn_timestamp", "amount", "my_category"]].rename(columns={"my_category": "category"}) if not bank_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"]),
-        credit_df[["txn_timestamp", "amount", "my_category"]].rename(columns={"my_category": "category"}) if not credit_df.empty else pd.DataFrame(columns=["txn_timestamp", "amount", "category"])
-    ], ignore_index=True)
-
-    actual_df["txn_timestamp"] = pd.to_datetime(actual_df["txn_timestamp"])
-    actual_df["month_year"] = actual_df["txn_timestamp"].dt.to_period("M").astype(str)
-    actual_df = actual_df[actual_df["month_year"] == selected_month]
-
     # --- Budget vs Actual Table ---
     filtered_budget = budget_df.copy()
     if selected_person != "All":
         filtered_budget = filtered_budget[filtered_budget["person"] == selected_person]
     filtered_budget = filtered_budget[filtered_budget["month_year"].astype(str) == selected_month]
 
-    spent_per_cat = actual_df.groupby("category")[["amount"]].sum().reset_index()
-    budget_per_cat = filtered_budget.groupby("category")[["budgeted"]].sum().reset_index()
+    # Filter bank transactions for selected person, month, and DEBIT type
+    filtered_bank = bank_df.copy()
+    if selected_person != "All":
+        filtered_bank = filtered_bank[filtered_bank["person"] == selected_person]
+    filtered_bank = filtered_bank[(filtered_bank["txn_timestamp"].dt.to_period("M").astype(str) == selected_month) & (filtered_bank["type"].str.upper() == "DEBIT")]
 
-    merged = pd.merge(budget_per_cat, spent_per_cat, on="category", how="outer").fillna(0)
-    merged.columns = ["Category", "Budgeted", "Spent"]
+    # Group by my_category and sum amount
+    actuals_per_cat = filtered_bank.groupby("my_category")["amount"].sum().reset_index()
+    actuals_per_cat.columns = ["Category", "Spent"]
+
+    # Group budget by category
+    budget_per_cat = filtered_budget.groupby("category")["budgeted"].sum().reset_index()
+    budget_per_cat.columns = ["Category", "Budgeted"]
+
+    # Merge on Category
+    merged = pd.merge(budget_per_cat, actuals_per_cat, on="Category", how="outer").fillna(0)
     merged["% Used"] = (merged["Spent"] / merged["Budgeted"] * 100).round(2)
     merged["% Used"] = merged["% Used"].replace([float("inf"), -float("inf")], 0)
 
@@ -164,12 +165,12 @@ def show():
     col1, col2 = st.columns(2)
     
     with col1:
-        if not spent_per_cat.empty:
+        if not actuals_per_cat.empty:
             # Enhanced Pie Chart
             fig_pie = px.pie(
-                spent_per_cat, 
-                names="category", 
-                values="amount", 
+                actuals_per_cat, 
+                names="Category", 
+                values="Spent", 
                 title="🧁 Category-wise Spending Breakdown",
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
@@ -183,16 +184,16 @@ def show():
             st.plotly_chart(fig_pie, use_container_width=True)
 
     with col2:
-        if not actual_df.empty:
+        if not actuals_per_cat.empty:
             # Enhanced Bar Chart for Top Categories
-            top_categories = spent_per_cat.nlargest(8, 'amount')
+            top_categories = actuals_per_cat.nlargest(8, 'Spent')
             fig_bar = px.bar(
                 top_categories,
-                x='amount',
-                y='category',
+                x='Spent',
+                y='Category',
                 orientation='h',
                 title="📊 Top Spending Categories",
-                color='amount',
+                color='Spent',
                 color_continuous_scale='viridis'
             )
             fig_bar.update_layout(
@@ -205,16 +206,21 @@ def show():
             st.plotly_chart(fig_bar, use_container_width=True)
 
     # --- Monthly Trend Chart ---
-    if not actual_df.empty:
+    if not actuals_per_cat.empty:
         st.markdown("#### 📈 Monthly Spending Trend")
-        trend_data = actual_df.copy()
-        trend_data["month"] = trend_data["txn_timestamp"].dt.to_period("M").astype(str)
-        trend_chart = trend_data.groupby("month")["amount"].sum().reset_index()
+        trend_data = actuals_per_cat.copy()
+        trend_data["month"] = trend_data["Category"].str.split('-').str[1]
+        trend_data["year"] = trend_data["Category"].str.split('-').str[0]
+        trend_data["month"] = pd.to_datetime(trend_data["month"], format='%m').dt.strftime('%b')
+        trend_data["year"] = trend_data["year"].astype(int)
+        trend_data["month_year"] = trend_data["year"] + '-' + trend_data["month"]
+        trend_data["month_year"] = pd.to_datetime(trend_data["month_year"], format='%Y-%b')
+        trend_chart = trend_data.groupby("month_year")["Spent"].sum().reset_index()
         
         fig_line = px.line(
             trend_chart, 
-            x="month", 
-            y="amount", 
+            x="month_year", 
+            y="Spent", 
             title="📈 Monthly Spending Trend",
             markers=True
         )
