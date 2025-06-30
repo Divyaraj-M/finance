@@ -215,21 +215,16 @@ def show():
             st.plotly_chart(fig_bar, use_container_width=True)
 
     # --- Monthly Trend Chart ---
-    if not actuals_per_cat.empty:
+    if not filtered_bank.empty:
         st.markdown("#### 📈 Monthly Spending Trend")
-        trend_data = actuals_per_cat.copy()
-        trend_data["month"] = trend_data["Category"].str.split('-').str[1]
-        trend_data["year"] = trend_data["Category"].str.split('-').str[0]
-        trend_data["month"] = pd.to_datetime(trend_data["month"], format='%m').dt.strftime('%b')
-        trend_data["year"] = trend_data["year"].astype(int)
-        trend_data["month_year"] = trend_data["year"] + '-' + trend_data["month"]
-        trend_data["month_year"] = pd.to_datetime(trend_data["month_year"], format='%Y-%b')
-        trend_chart = trend_data.groupby("month_year")["Spent"].sum().reset_index()
-        
+        trend_data = filtered_bank.copy()
+        trend_data["month_year"] = trend_data["txn_timestamp"].dt.to_period("M").astype(str)
+        trend_chart = trend_data.groupby("month_year")["amount"].sum().reset_index()
+
         fig_line = px.line(
-            trend_chart, 
-            x="month_year", 
-            y="Spent", 
+            trend_chart,
+            x="month_year",
+            y="amount",
             title="📈 Monthly Spending Trend",
             markers=True
         )
